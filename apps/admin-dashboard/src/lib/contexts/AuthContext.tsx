@@ -88,35 +88,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      // Mock authentication - in production, this would call a real API
-      if (email === 'csm@claritypool.com' && password === 'csm123') {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Set mock token
-        document.cookie = 'auth-token=mock-token; path=/; max-age=86400';
-        
-        const mockUser: User = {
-          id: '123e4567-e89b-12d3-a456-426614174000',
-          email: 'csm@claritypool.com',
-          firstName: 'Sarah',
-          lastName: 'CSM',
-          role: 'CSM',
-          permissions: ['bookings:read', 'bookings:write', 'technicians:read'],
-          createdAt: new Date().toISOString(),
-        };
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
 
-        setAuthState({
-          user: mockUser,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-        });
+      const data = await response.json();
 
-        router.push('/dashboard');
-      } else {
-        throw new Error('Invalid email or password');
+      if (!response.ok) {
+        throw new Error(data.message || 'Invalid credentials');
       }
+      
+      // Store token
+      document.cookie = `auth-token=${data.accessToken}; path=/; max-age=${data.expiresIn}; SameSite=Strict`;
+      
+      // Store auth data
+      setAuthState({
+        user: data.user,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      });
+
+      router.push('/dashboard');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed';
       setAuthState(prev => ({

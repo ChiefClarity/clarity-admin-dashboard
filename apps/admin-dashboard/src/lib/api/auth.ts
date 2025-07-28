@@ -6,7 +6,17 @@ class AuthService {
   private tokenExpiry: number | null = null;
 
   async getValidToken(): Promise<string | null> {
-    // Check if token exists and is still valid
+    // First try to get token from cookie
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('auth-token='))
+      ?.split('=')[1];
+    
+    if (token) {
+      return token;
+    }
+
+    // Check if token exists in memory and is still valid
     if (this.token && this.tokenExpiry && Date.now() < this.tokenExpiry) {
       return this.token;
     }
@@ -52,6 +62,8 @@ class AuthService {
     this.token = null;
     this.refreshToken = null;
     this.tokenExpiry = null;
+    // Clear auth cookie
+    document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; SameSite=Strict';
   }
 
   async logout(): Promise<void> {

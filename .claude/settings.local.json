@@ -15,7 +15,10 @@
       "Bash(npx tailwindcss:*)",
       "Bash(pkill:*)",
       "Bash(true)",
-      "Bash(npx shadcn@latest add:*)"
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm run build:*)",
+      "Bash(git push:*)",
+      "Bash(PORT=3000 npm run start)"
     ],
     "deny": []
   }
