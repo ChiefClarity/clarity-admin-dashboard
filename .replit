@@ -1,5 +1,5 @@
-run = "npm run dev"
-entrypoint = "index.js"
+run = "cd apps/admin-dashboard && PORT=3001 npm run dev"
+entrypoint = "apps/admin-dashboard/src/app/page.tsx"
 hidden = [".config", "package-lock.json", ".next", ".swc"]
 modules = ["nodejs-22"]
 
@@ -10,8 +10,8 @@ channel = "stable-24_11"
 NEXT_TELEMETRY_DISABLED = "1"
 
 [deployment]
-build = ["npm", "run", "build"]
-run = ["npm", "run", "start"]
+build = ["cd", "apps/admin-dashboard", "&&", "npm", "run", "build"]
+run = ["cd", "apps/admin-dashboard", "&&", "npm", "run", "start"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
@@ -21,3 +21,28 @@ externalPort = 80
 [[ports]]
 localPort = 3001
 externalPort = 3001
+
+[[ports]]
+localPort = 22816
+externalPort = 5000
+exposeLocalhost = true
+
+[[ports]]
+localPort = 47135
+externalPort = 3003
+exposeLocalhost = true
+
+[[ports]]
+localPort = 57047
+externalPort = 4200
+exposeLocalhost = true
+
+[[ports]]
+localPort = 64951
+externalPort = 3000
+exposeLocalhost = true
+
+[[ports]]
+localPort = 65145
+externalPort = 3002
+exposeLocalhost = true

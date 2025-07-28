@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Check, X, AlertCircle, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -40,17 +39,11 @@ const toastVariants = {
 }
 
 export function Toaster({ toasts = [] }: ToasterProps) {
-  const [visibleToasts, setVisibleToasts] = useState<Toast[]>([])
-
-  useEffect(() => {
-    setVisibleToasts(toasts)
-  }, [toasts])
-
-  if (visibleToasts.length === 0) return null
+  if (toasts.length === 0) return null
 
   return (
     <div className="fixed bottom-0 right-0 z-50 m-4 flex max-w-md flex-col gap-2">
-      {visibleToasts.map((toast) => {
+      {toasts.map((toast) => {
         const variant = toastVariants[toast.variant || "default"]
         const Icon = variant.icon
 

@@ -2,23 +2,16 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { z } from 'zod';
-import { errorHandler } from '@/lib/utils/errorHandler';
-import { logger } from '@/lib/utils/logger';
 
-// Strict user schema
-const UserSchema = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  role: z.enum(['CSM', 'ADMIN', 'TECH_MANAGER']),
-  permissions: z.array(z.string()),
-  createdAt: z.string().datetime(),
-  lastLoginAt: z.string().datetime().optional(),
-});
-
-export type User = z.infer<typeof UserSchema>;
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: 'CSM' | 'ADMIN' | 'TECH_MANAGER';
+  permissions: string[];
+  createdAt: string;
+}
 
 interface AuthState {
   user: User | null;
@@ -37,7 +30,7 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Protected routes configuration
-const PUBLIC_ROUTES = ['/login', '/forgot-password', '/reset-password'];
+const PUBLIC_ROUTES = ['/login', '/forgot-password', '/reset-password', '/test'];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [authState, setAuthState] = useState<AuthState>({
@@ -50,21 +43,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Initialize auth on mount
-  useEffect(() => {
-    initializeAuth();
-  }, []);
-
   // Route protection
   useEffect(() => {
     if (!authState.isLoading) {
-      const isPublicRoute = PUBLIC_ROUTES.some(route => pathname.startsWith(route));
+      const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
       
       if (!authState.isAuthenticated && !isPublicRoute) {
-        logger.info('Unauthenticated access to protected route', { pathname });
         router.push('/login');
       } else if (authState.isAuthenticated && pathname === '/login') {
-        router.push('/');
+        router.push('/dashboard');
       }
     }
   }, [authState.isAuthenticated, authState.isLoading, pathname, router]);
@@ -77,21 +64,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
-        const validatedUser = UserSchema.parse(data);
         
         setAuthState({
-          user: validatedUser,
+          user: data,
           isAuthenticated: true,
           isLoading: false,
           error: null,
         });
-
-        logger.info('Auth initialized', { userId: validatedUser.id });
       } else {
         throw new Error('Not authenticated');
       }
     } catch (error) {
-      logger.warn('Auth initialization failed', error);
       setAuthState({
         user: null,
         isAuthenticated: false,
@@ -105,36 +88,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include',
-      });
+      // Mock authentication - in production, this would call a real API
+      if (email === 'csm@claritypool.com' && password === 'csm123') {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Set mock token
+        document.cookie = 'auth-token=mock-token; path=/; max-age=86400';
+        
+        const mockUser: User = {
+          id: '123e4567-e89b-12d3-a456-426614174000',
+          email: 'csm@claritypool.com',
+          firstName: 'Sarah',
+          lastName: 'CSM',
+          role: 'CSM',
+          permissions: ['bookings:read', 'bookings:write', 'technicians:read'],
+          createdAt: new Date().toISOString(),
+        };
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Login failed');
+        setAuthState({
+          user: mockUser,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        });
+
+        router.push('/dashboard');
+      } else {
+        throw new Error('Invalid email or password');
       }
-
-      const data = await response.json();
-      const validatedUser = UserSchema.parse(data.user);
-
-      setAuthState({
-        user: validatedUser,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      });
-
-      logger.info('Login successful', { userId: validatedUser.id });
-      router.push('/');
     } catch (error) {
-      const appError = errorHandler.handleError(error, 'Login');
+      const message = error instanceof Error ? error.message : 'Login failed';
       setAuthState(prev => ({
         ...prev,
         isLoading: false,
-        error: appError.message,
+        error: message,
       }));
       throw error;
     }
@@ -142,11 +130,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-
+      // Clear auth cookie
+      document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC';
+      
       setAuthState({
         user: null,
         isAuthenticated: false,
@@ -154,18 +140,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error: null,
       });
 
-      logger.info('Logout successful');
       router.push('/login');
     } catch (error) {
-      logger.error('Logout failed', error);
-      // Still clear local state even if API call fails
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: null,
-      });
-      router.push('/login');
+      console.error('Logout error:', error);
     }
   }, [router]);
 
@@ -177,33 +154,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthState(prev => ({ ...prev, error: null }));
   }, []);
 
-  const value: AuthContextType = {
-    ...authState,
-    login,
-    logout,
-    refreshAuth,
-    clearError,
-  };
+  // Initialize auth on mount
+  useEffect(() => {
+    initializeAuth();
+  }, []);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        ...authState,
+        login,
+        logout,
+        refreshAuth,
+        clearError,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
-
-// Permission check hook
-export const usePermission = (permission: string) => {
-  const { user } = useAuth();
-  return user?.permissions.includes(permission) ?? false;
-};
-
-// Role check hook
-export const useRole = (role: string) => {
-  const { user } = useAuth();
-  return user?.role === role;
-};
+}

@@ -13,6 +13,7 @@ import {
   Settings,
   X,
   Menu,
+  Mail,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -21,6 +22,7 @@ const navigation = [
   { name: 'Bookings', href: '/dashboard/bookings', icon: ClipboardList },
   { name: 'Calendar', href: '/dashboard/calendar', icon: Calendar },
   { name: 'Messages', href: '/dashboard/messages', icon: MessageSquare },
+  { name: 'Email Reports', href: '/dashboard/reports/email', icon: Mail },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];

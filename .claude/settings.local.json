@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(npx create-next-app:*)",
+      "Bash(ls:*)",
+      "Bash(npm install:*)",
+      "Bash(find:*)",
+      "Bash(rm:*)",
+      "Bash(npm run dev:*)",
+      "Bash(PORT=3001 npm run dev)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(pkill:*)",
+      "Bash(true)"
+    ],
+    "deny": []
+  }
+}

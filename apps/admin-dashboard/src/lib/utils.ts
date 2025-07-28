@@ -27,3 +27,11 @@ export function formatCurrency(amount: number): string {
 export function truncate(str: string, length: number): string {
   return str.length > length ? `${str.substring(0, length)}...` : str;
 }
+
+export function formatNumber(num: number): string {
+  return new Intl.NumberFormat("en-US").format(num);
+}
+
+export function formatPercentage(num: number): string {
+  return `${num.toFixed(1)}%`;
+}
