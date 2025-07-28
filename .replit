@@ -1,16 +1,27 @@
-run = "cd apps/admin-dashboard && npm run start"
-entrypoint = "apps/admin-dashboard/src/app/layout.tsx"
+entrypoint = "apps/admin-dashboard/package.json"
+modules = ["nodejs-20"]
 
 [nix]
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "cd apps/admin-dashboard && npm run start"]
 build = ["sh", "-c", "cd apps/admin-dashboard && npm install && npm run build"]
+run = ["sh", "-c", "cd apps/admin-dashboard && npm run start"]
+deploymentTarget = "cloudrun"
 
-[env]
-PORT = "3000"
+[languages]
+[languages.javascript]
+pattern = "**/{*.js,*.jsx,*.ts,*.tsx}"
+
+[languages.javascript.languageServer]
+start = "typescript-language-server --stdio"
 
 [[ports]]
 localPort = 3000
 externalPort = 80
+
+[packager]
+language = "nodejs"
+
+[packager.features]
+enabledForHosting = true
