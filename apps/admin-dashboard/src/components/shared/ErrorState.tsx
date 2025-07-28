@@ -1,33 +1,32 @@
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ErrorStateProps {
-  error: Error | unknown;
-  retry?: () => void;
-  fullScreen?: boolean;
+  title?: string;
+  message?: string;
+  onRetry?: () => void;
+  className?: string;
 }
 
-export function ErrorState({ error, retry, fullScreen = false }: ErrorStateProps) {
-  const message = error instanceof Error ? error.message : 'An unexpected error occurred';
-  
-  const containerClass = fullScreen 
-    ? "fixed inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm" 
-    : "flex items-center justify-center p-8";
-
+export function ErrorState({ 
+  title = 'Something went wrong',
+  message = 'An error occurred while loading the data.',
+  onRetry,
+  className 
+}: ErrorStateProps) {
   return (
-    <div className={containerClass}>
-      <div className="flex flex-col items-center gap-4 text-center">
-        <AlertCircle className="h-10 w-10 text-destructive" />
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Something went wrong</h3>
-          <p className="text-sm text-muted-foreground max-w-md">{message}</p>
-        </div>
-        {retry && (
-          <Button onClick={retry} variant="outline">
-            Try again
-          </Button>
-        )}
-      </div>
+    <div className={cn('flex flex-col items-center justify-center p-8', className)}>
+      <AlertCircle className="h-12 w-12 text-destructive" />
+      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
+      <p className="mt-2 text-center text-sm text-muted-foreground max-w-sm">
+        {message}
+      </p>
+      {onRetry && (
+        <Button onClick={onRetry} variant="outline" className="mt-4">
+          Try again
+        </Button>
+      )}
     </div>
   );
 }

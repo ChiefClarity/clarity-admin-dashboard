@@ -14,7 +14,8 @@
       "Bash(npm uninstall:*)",
       "Bash(npx tailwindcss:*)",
       "Bash(pkill:*)",
-      "Bash(true)"
+      "Bash(true)",
+      "Bash(npx shadcn@latest add:*)"
     ],
     "deny": []
   }

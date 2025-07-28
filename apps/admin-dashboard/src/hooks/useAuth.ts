@@ -1,22 +1,23 @@
-export { useAuth } from '@/lib/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { getCookie, deleteCookie } from '@/lib/utils';
 
-// Extended useAuth hook that provides token access
-import { useAuth as useAuthContext } from '@/lib/contexts/AuthContext';
-
-export function useAuthWithToken() {
-  const auth = useAuthContext();
+export function useAuth() {
+  const router = useRouter();
   
-  // In a real implementation, the token would be stored in the auth context
-  // For now, we'll check localStorage (this should be managed by the auth context)
-  const getToken = () => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('auth_token');
-    }
-    return null;
+  const logout = () => {
+    deleteCookie('auth-token');
+    router.push('/login');
+  };
+
+  const isAuthenticated = () => {
+    return !!getCookie('auth-token');
   };
 
   return {
-    ...auth,
-    token: getToken(),
+    logout,
+    isAuthenticated,
+    token: getCookie('auth-token'),
   };
 }
+
+export { useAuth as useAuthWithToken };

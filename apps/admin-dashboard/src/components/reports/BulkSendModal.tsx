@@ -19,6 +19,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
 import { 
   Search, 
@@ -48,7 +49,7 @@ export function BulkSendModal({ open, onOpenChange, onSuccess }: BulkSendModalPr
   // Fetch customers
   const { data: customers, isLoading } = useQuery({
     queryKey: ['customers', 'bulk-send'],
-    queryFn: () => customersApi.getAllCustomers({ limit: 100 }).then(res => res.data.customers),
+    queryFn: () => customersApi.getAllCustomers({ limit: 100 }).then(res => res.customers),
     enabled: open,
   });
 
@@ -56,12 +57,11 @@ export function BulkSendModal({ open, onOpenChange, onSuccess }: BulkSendModalPr
   const bulkSendMutation = useMutation({
     mutationFn: (customerIds: number[]) => reportsApi.sendBulk(customerIds),
     onSuccess: (response) => {
-      setSendResults(response.data);
-      if (response.data.successful > 0) {
+      setSendResults(response);
+      if (response.successful > 0) {
         toast({
           title: 'Bulk send completed',
-          description: `Successfully sent ${response.data.successful} of ${response.data.total} reports`,
-          variant: 'success',
+          description: `Successfully sent ${response.successful} of ${response.total} reports`,
         });
       }
     },

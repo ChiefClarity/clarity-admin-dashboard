@@ -1,20 +1,18 @@
 import { apiClient } from '@/lib/api/client';
-import type { Customer } from '@/types/customer';
-
-interface CustomerListResponse {
-  customers: Customer[];
-  total: number;
-  page: number;
-  totalPages: number;
-}
+import type { Customer, CustomerListResponse } from '@/types/customer';
 
 export const customersApi = {
-  getAllCustomers: (params?: { limit?: number; offset?: number }) =>
-    apiClient.get<CustomerListResponse>('/api/admin/customers', { params }),
+  getAllCustomers: (params?: {
+    limit?: number;
+    offset?: number;
+    status?: string;
+  }) => apiClient.get<CustomerListResponse>('/api/customers', { params }),
 
-  searchCustomers: (params: { query: string; limit?: number }) =>
-    apiClient.get<CustomerListResponse>('/api/admin/customers/search', { params }),
+  searchCustomers: (params: {
+    query: string;
+    limit?: number;
+  }) => apiClient.get<CustomerListResponse>('/api/customers/search', { params }),
 
-  getCustomer: (id: number) =>
-    apiClient.get<Customer>(`/api/admin/customers/${id}`),
+  getCustomer: (id: number) => 
+    apiClient.get<Customer>(`/api/customers/${id}`),
 };

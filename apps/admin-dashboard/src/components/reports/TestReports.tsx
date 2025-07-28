@@ -62,7 +62,6 @@ export function TestReports() {
       toast({
         title: 'Test report sent',
         description: `Report sent successfully to ${selectedCustomer?.firstName} ${selectedCustomer?.lastName}`,
-        variant: 'success',
       });
       
       // Add to recent sent list
@@ -70,7 +69,7 @@ export function TestReports() {
         {
           customerId,
           timestamp: new Date(),
-          jobId: response.data.jobId,
+          jobId: response.jobId,
         },
         ...prev.slice(0, 4), // Keep last 5
       ]);
@@ -301,7 +300,6 @@ export function TestReports() {
           toast({
             title: 'Bulk send completed',
             description: 'Check the progress in the notifications panel.',
-            variant: 'success',
           });
         }}
       />

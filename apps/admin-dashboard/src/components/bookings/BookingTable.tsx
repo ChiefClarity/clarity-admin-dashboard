@@ -46,7 +46,7 @@ export function BookingTable() {
   }, [data?.bookings]);
 
   if (isLoading) return <LoadingState />;
-  if (error) return <ErrorState error={error} retry={refetch} />;
+  if (error) return <ErrorState message={error.message} onRetry={refetch} />;
 
   return (
     <div className="space-y-4">

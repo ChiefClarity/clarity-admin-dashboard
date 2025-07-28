@@ -13,7 +13,7 @@ export default function DashboardLayout({
   const { isLoading, isAuthenticated } = useAuth();
 
   if (isLoading) {
-    return <LoadingState fullScreen message="Loading dashboard..." />;
+    return <LoadingState className="min-h-screen" message="Loading dashboard..." />;
   }
 
   if (!isAuthenticated) {

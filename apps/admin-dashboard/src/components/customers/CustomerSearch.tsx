@@ -43,7 +43,7 @@ export function CustomerSearch({
     queryFn: () => customersApi.searchCustomers({ 
       query: debouncedSearch,
       limit: 10 
-    }).then(res => res.data.customers),
+    }).then(res => res.customers),
     enabled: debouncedSearch.length > 0 && open,
   });
 

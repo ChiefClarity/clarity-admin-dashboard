@@ -10,13 +10,13 @@ const envSchema = z.object({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   
   // Feature flags
-  NEXT_PUBLIC_USE_REAL_API: z.string().transform(v => v === 'true').default('false'),
-  NEXT_PUBLIC_ENABLE_ANALYTICS: z.string().transform(v => v === 'true').default('true'),
-  NEXT_PUBLIC_ENABLE_REALTIME: z.string().transform(v => v === 'true').default('false'),
-  NEXT_PUBLIC_ENABLE_ROUTES: z.string().transform(v => v === 'true').default('false'),
-  NEXT_PUBLIC_ENABLE_AI: z.string().transform(v => v === 'true').default('false'),
-  NEXT_PUBLIC_ENABLE_BULK: z.string().transform(v => v === 'true').default('false'),
-  NEXT_PUBLIC_USE_POOLBRAIN: z.string().transform(v => v === 'true').default('false'),
+  NEXT_PUBLIC_USE_REAL_API: z.string().default('false').transform(v => v === 'true'),
+  NEXT_PUBLIC_ENABLE_ANALYTICS: z.string().default('true').transform(v => v === 'true'),
+  NEXT_PUBLIC_ENABLE_REALTIME: z.string().default('false').transform(v => v === 'true'),
+  NEXT_PUBLIC_ENABLE_ROUTES: z.string().default('false').transform(v => v === 'true'),
+  NEXT_PUBLIC_ENABLE_AI: z.string().default('false').transform(v => v === 'true'),
+  NEXT_PUBLIC_ENABLE_BULK: z.string().default('false').transform(v => v === 'true'),
+  NEXT_PUBLIC_USE_POOLBRAIN: z.string().default('false').transform(v => v === 'true'),
   
   // Third-party services
   SENTRY_DSN: z.string().optional(),

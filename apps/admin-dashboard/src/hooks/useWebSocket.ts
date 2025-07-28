@@ -1,6 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { useAuthWithToken } from '@/hooks/useAuth';
+import { getCookie } from '@/lib/utils';
+
+// Dynamic import for socket.io-client to avoid build issues
+let io: any;
+if (typeof window !== 'undefined') {
+  io = require('socket.io-client').io;
+}
 
 interface UseWebSocketOptions {
   namespace: string;
@@ -9,11 +14,11 @@ interface UseWebSocketOptions {
 
 export function useWebSocket({ namespace, events }: UseWebSocketOptions) {
   const [isConnected, setIsConnected] = useState(false);
-  const socketRef = useRef<Socket | null>(null);
-  const { token } = useAuthWithToken();
+  const socketRef = useRef<any>(null);
 
   useEffect(() => {
-    if (!token) return;
+    const token = getCookie('auth-token');
+    if (!token || !io) return;
 
     const socket = io(`${process.env.NEXT_PUBLIC_API_URL}/${namespace}`, {
       auth: { token },
@@ -40,7 +45,8 @@ export function useWebSocket({ namespace, events }: UseWebSocketOptions) {
     return () => {
       socket.disconnect();
     };
-  }, [namespace, token]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [namespace]);
 
   return { 
     socket: socketRef.current, 

@@ -47,12 +47,11 @@ export function ReportConfig({ config, onUpdate }: ReportConfigProps) {
 
   const updateMutation = useMutation({
     mutationFn: (data: Partial<ReportConfig>) => 
-      reportsApi.updateConfig(data).then(res => res.data),
+      reportsApi.updateConfig(data),
     onSuccess: (updatedConfig) => {
       toast({
         title: 'Configuration saved',
         description: 'Report settings have been updated successfully.',
-        variant: 'success',
       });
       setFormData(updatedConfig);
       setHasChanges(false);

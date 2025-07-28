@@ -55,8 +55,8 @@ export function ReportHistory() {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['reportHistory', filters],
-    queryFn: () => reportsApi.getHistory(filters).then(res => res.data),
-    keepPreviousData: true,
+    queryFn: () => reportsApi.getHistory(filters),
+    placeholderData: (previousData) => previousData,
   });
 
   const handlePageChange = (direction: 'prev' | 'next') => {

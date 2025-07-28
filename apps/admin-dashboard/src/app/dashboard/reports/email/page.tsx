@@ -31,13 +31,13 @@ export default function EmailReportsPage() {
   // Fetch initial data
   const { data: config, isLoading: configLoading, refetch: refetchConfig } = useQuery({
     queryKey: ['reportConfig'],
-    queryFn: () => reportsApi.getConfig().then(res => res.data),
+    queryFn: () => reportsApi.getConfig(),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const { data: analytics, isLoading: analyticsLoading, refetch: refetchAnalytics } = useQuery({
     queryKey: ['reportAnalytics'],
-    queryFn: () => reportsApi.getAnalytics().then(res => res.data),
+    queryFn: () => reportsApi.getAnalytics(),
     staleTime: 60 * 1000, // 1 minute
   });
 

@@ -7,12 +7,15 @@ export interface Customer {
   address?: string;
   city?: string;
   state?: string;
-  zip?: string;
-  poolDetails?: {
-    poolType?: string;
-    poolSize?: string;
-    equipment?: string[];
-  };
+  zipCode?: string;
+  status: 'active' | 'inactive';
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CustomerListResponse {
+  customers: Customer[];
+  total: number;
+  page: number;
+  totalPages: number;
 }

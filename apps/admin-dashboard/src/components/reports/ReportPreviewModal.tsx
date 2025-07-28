@@ -25,13 +25,14 @@ export function ReportPreviewModal({
     if (open) {
       loadPreview();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, customerId]);
 
   const loadPreview = async () => {
     try {
       setLoading(true);
       const response = await reportsApi.preview(customerId);
-      setHtml(response.data.html);
+      setHtml(response.html);
     } catch (error) {
       console.error('Failed to load preview:', error);
     } finally {
