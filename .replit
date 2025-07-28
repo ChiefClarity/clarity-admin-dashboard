@@ -1,17 +1,19 @@
-run = "npm run dev"
-entrypoint = "index.js"
+run = ["sh", "-c", "cd apps/admin-dashboard && PORT=3000 npm run start"]
+entrypoint = "apps/admin-dashboard/package.json"
 hidden = [".config", "package-lock.json", ".next", ".swc"]
-modules = ["nodejs-22"]
+modules = ["nodejs-20"]
 
 [nix]
-channel = "stable-24_11"
+channel = "stable-24_05"
 
 [env]
+NODE_ENV = "production"
+PORT = "3000"
 NEXT_TELEMETRY_DISABLED = "1"
 
 [deployment]
-build = ["npm", "run", "build"]
-run = ["npm", "run", "start"]
+build = ["sh", "-c", "cd apps/admin-dashboard && npm install && npm run build"]
+run = ["sh", "-c", "cd apps/admin-dashboard && npm run start"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
