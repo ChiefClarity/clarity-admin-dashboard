@@ -101,12 +101,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(data.message || 'Invalid credentials');
       }
       
-      // Store token
       document.cookie = `auth-token=${data.accessToken}; path=/; max-age=${data.expiresIn}; SameSite=Strict`;
       
-      // Store auth data
       setAuthState({
-        user: data.user,
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+          role: data.user.role || 'ADMIN',
+          permissions: data.user.permissions || ['*'],
+          createdAt: new Date().toISOString(),
+        },
         isAuthenticated: true,
         isLoading: false,
         error: null,
